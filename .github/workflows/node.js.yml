@@ -20,4 +20,4 @@ jobs:
     - name: Install dependencies
       run: npm install
     - name: Build
-      run: TOKEN=${{ env.TOKEN }} node index.js
+      run: TOKEN=${{ vars.TOKEN }} node index.js
