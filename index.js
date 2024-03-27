@@ -5,7 +5,7 @@ const archiver = require('archiver');
 const { Client } = require('exaroton');
 
 // Get the Exaroton "client" object
-const client = new Client(process.env.token);
+const client = new Client(process.env.TOKEN);
 
 // Create a server variable to be set later
 let server = null
