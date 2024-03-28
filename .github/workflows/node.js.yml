@@ -39,9 +39,22 @@ jobs:
         name: generated-zip
         path: ${{ steps.find-zip.outputs.zip-path }}
 
+    - name: Get artifact information
+      id: get-artifact-info
+      run: |
+        ARTIFACT_INFO=$(curl -sSL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts")
+        echo "::set-output name=artifact-info::$ARTIFACT_INFO"
+    
+    - name: Extract artifact filename
+      id: extract-artifact-filename
+      run: |
+        FILENAME=$(echo "${{ steps.get-artifact-info.outputs.artifact-info }}" | jq -r '.artifacts[0].name')
+        echo "::set-output name=filename::$FILENAME"
+      if: steps.get-artifact-info.outputs.artifact-info != '[]'
+
     - name: Get artifact download URL
       id: artifact-download-url
-      run: echo "::set-output name=url::$(echo "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/$(basename "${{ steps.find-zip.outputs.zip-path }}")")"
+      run: echo "::set-output name=url::$(echo "${{ github.server_url }}/$(echo ${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ steps.extract-artifact-filename.outputs.filename }})")
 
     - name: Pass URL to npm run handoff
       run: npm run handoff ${{ steps.artifact-download-url.outputs.url }}
