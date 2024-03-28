@@ -17,7 +17,28 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
+        
     - name: Install dependencies
       run: npm install
-    - name: Build
+      
+    - name: Generate zip file
       run: TOKEN=${{ vars.TOKEN }} node index.js
+
+    - name: Find generated zip file
+      id: find-zip
+      run: |
+        ZIP_FILE=$(find . -name '*.zip' -type f -printf "%T@ %p\n" | sort -n | tail -n 1 | cut -d' ' -f2-)
+        echo "::set-output name=zip-path::$ZIP_FILE"
+
+    - name: Upload zip file as artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: generated-zip
+        path: ${{ steps.find-zip.outputs.zip-path }}
+
+    - name: Get artifact download URL
+      id: artifact-download-url
+      run: echo "::set-output name=url::$(echo "${{ github.server_url }}/$(echo ${{ github.repository }})/-/jobs/${{ github.run_id }}/artifacts/$(echo generated-zip)")"
+
+    - name: Pass URL to npm run handoff
+      run: npm run handoff ${{ steps.artifact-download-url.outputs.url }}
