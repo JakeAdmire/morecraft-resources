@@ -100,9 +100,28 @@ const bundleTexturePack = (directory = 'resources') => new Promise((resolve, rej
 
   output.on('close', function () {
     const bytes = archive.pointer()
-    const megabytes = Math.round((bytes / 1000000) * 10) / 10
 
-    resolve({ fileSize: `${ megabytes }mb`, outputFilename, outputPath })
+    let size = null
+    let unit = null
+
+    if (bytes >= 100000000) {
+      size = bytes / 1000000000
+      unit = 'gb'
+    } else if (bytes >= 100000) {
+      size = bytes / 1000000
+      unit = 'mb'
+    } else if (bytes >= 1000) {
+      size = bytes / 1000
+      unit = 'kb'
+    } else {
+      size = bytes
+      unit = 'bytes'
+    }
+
+    const roundedSize = Math.round(size * 10) / 10
+    const fileSize = `${roundedSize}${unit}`
+
+    resolve({ fileSize, outputFilename, outputPath })
   });
 
   archive.finalize();
