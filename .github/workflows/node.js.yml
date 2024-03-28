@@ -24,6 +24,9 @@ jobs:
     - name: Generate zip file
       run: TOKEN=${{ vars.TOKEN }} node index.js
 
+    - name: List directory contents
+      run: ls -R
+
     - name: Find generated zip file
       id: find-zip
       run: |
