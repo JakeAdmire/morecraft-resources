@@ -15,7 +15,7 @@ async function init() {
 
   // 1. Bundle updated resource pack
   console.log('Bundling updated resource pack...')
-  const { fileSize, outputFilename, outputPath } = await bundleTexturePack('texturePack')
+  const { fileSize, outputFilename, outputPath } = await bundleTexturePack('resources')
   console.log(`A new ${ fileSize } resource pack has been bundled at "${ outputPath }"`)
   console.log('---')
 
@@ -32,7 +32,7 @@ async function init() {
 
   // 3. Get new hash based on the updated texture pack archive
   console.log('Generating a new hash from the newly bundled resource pack...')
-  const newHash = await getHashFromFile('texturePack.zip');
+  const newHash = await getHashFromFile(outputPath);
   console.log(`Generated the following hash to replace "resource-pack-sha1": "${ newHash }"`)
   
   // 4. Compare the new and old hashes
@@ -89,7 +89,7 @@ async function setFileConfigValue(fileName, optionName, newValue) {
   await config.save();
 }
 
-const bundleTexturePack = (directory = 'texturePack') => new Promise((resolve, reject) => {
+const bundleTexturePack = (directory = 'resources') => new Promise((resolve, reject) => {
   const outputFilename = `${Date.now()}.zip`
   const outputPath = `${__dirname}/build/${outputFilename}`
   const output = createWriteStream(outputPath);
