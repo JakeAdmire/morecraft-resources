@@ -11,6 +11,9 @@ const client = new Client(process.env.TOKEN);
 let server = null
 
 async function init() {
+  console.log('process.cwd:', process.cwd())
+  return
+
   server = await getServerByName('wpMoreCraft')
 
   // 1. Bundle updated resource pack
